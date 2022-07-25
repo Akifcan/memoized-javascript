@@ -58,6 +58,7 @@ main {
 }
 
 .card {
+    color: white;
     overflow: hidden;
     cursor: pointer;
     display: flex;
