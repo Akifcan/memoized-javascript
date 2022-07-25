@@ -3,6 +3,8 @@ const searchForm = document.querySelector('.search')
 const featuresBox = searchForm.querySelector('#features')
 const main = document.querySelector('main')
 
+const cached = {}
+
 function setSelectbox(data, parent) {
     data.forEach(x => {
         const option = document.createElement('option')
@@ -13,28 +15,33 @@ function setSelectbox(data, parent) {
 }
 
 function getResult(personCount, city, features) {
-    console.log(personCount, city, features)
+
     return new Promise((resolve, _) => {
         let result
         const args = []
         main.innerHTML = 'Lütfen bekleyin'
-        setTimeout(() => {
-            if (personCount) {
-                result = (result || hotels).filter(hotel => hotel.peopleCount === +personCount)
-                args.push(personCount)
-            }
+        if (cached[JSON.stringify([personCount, city, features])]) {
+            resolve(cached[JSON.stringify([personCount, city, features])])
+        } else {
+            setTimeout(() => {
+                if (personCount) {
+                    result = (result || hotels).filter(hotel => hotel.peopleCount === +personCount)
+                    args.push(personCount)
+                }
 
-            if (city) {
-                result = (result || hotels).filter(hotel => hotel.city === city)
-                args.push(city)
-            }
+                if (city) {
+                    result = (result || hotels).filter(hotel => hotel.city === city)
+                    args.push(city)
+                }
 
-            if (features.length) {
-                result = (result || hotels).filter(hotel => hotel.features.join(',').includes(features))
-                args.push(features)
-            }
-            resolve(result)
-        }, 5000)
+                if (features.length) {
+                    result = (result || hotels).filter(hotel => hotel.features.join(',').includes(features))
+                    args.push(features)
+                }
+                resolve(result)
+                cached[JSON.stringify([personCount, city, features])] = result
+            }, 5000)
+        }
     })
 }
 
